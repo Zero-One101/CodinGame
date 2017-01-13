@@ -7,3 +7,4 @@ Solutions for various CodinGame puzzles
 - Mars Lander 1 (C++)
 - Mars Lander 2 (C++)
 - Onboarding (C++)
+- Power of Thor (C++)
