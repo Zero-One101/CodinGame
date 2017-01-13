@@ -40,6 +40,11 @@ public:
     {
         return (Y > p.Y);
     }
+    
+    bool operator == (const Point& p) const
+    {
+        return (X == p.X && Y == p.Y);
+    }
 };
 
 /**
@@ -214,10 +219,20 @@ Point FindNextHighestPeak(int padDirection, Point currentPeak, const std::vector
     if (padDirection == -1) // Moving right
     {
         for (auto& p : points)
-        {
-            if (p.X >= comparePeak.X && p.Y > peak.Y && p.Y < MaxHeight)
+        {            
+            if (comparePeak == peak) // If we haven't gotten the first peak
             {
-                peak = p;
+                if (p.X >= comparePeak.X && p.Y < MaxHeight)
+                {
+                    peak = p;
+                }
+            }
+            else
+            {
+                if (p.X >= comparePeak.X && p.Y > peak.Y && p.Y < MaxHeight) // If the peak is ahead of us and is taller
+                {
+                    peak = p;
+                }
             }
         }
     }
@@ -231,9 +246,20 @@ Point FindNextHighestPeak(int padDirection, Point currentPeak, const std::vector
         
         for (auto& p : points)
         {
-            if (p.X <= comparePeak.X && p.Y > peak.Y && p.Y < MaxHeight)
+            
+            if (comparePeak == peak) // If we haven't gotten the first peak
             {
-                peak = p;
+                if (p.X <= comparePeak.X && p.Y < MaxHeight)
+                {
+                    peak = p;
+                }
+            }
+            else
+            {
+                if (p.X <= comparePeak.X && p.Y > peak.Y && p.Y < MaxHeight) // If the peak is ahead of us and is taller
+                {
+                    peak = p;
+                }
             }
         }
     }
