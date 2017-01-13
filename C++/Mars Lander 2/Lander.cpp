@@ -18,6 +18,9 @@ const float Gravity = 3.711;
 const float MaxThrust = 4;
 const float MaxAccel = MaxThrust - Gravity;
 
+/**
+ * Defines a point in 2D space
+ **/
 class Point
 {
 public:
@@ -65,47 +68,33 @@ Point FindLandingSite(const std::vector<Point> &points)
             {
                 int landY = p1.Y;
                 int landX = (p1.X + p2.X) / 2;
-                cerr << "Landing point is: " << landX << ", " << landY << endl;
+                //cerr << "Landing point is: " << landX << ", " << landY << endl;
                 return Point(landX, landY);
             }
         }
     }
 }
 
-Point FindHighestPeak(const std::vector<Point> &points)
-{
-    Point peak = Point(0, 0);
-    for (auto& p : points)
-    {
-        if (p.Y > peak.Y && p.Y < MaxHeight)
-        {
-            peak = p;
-        }
-    }
-    
-    return peak;
-}
-
-int CalcFullBurnStopTime(int velocity)
-{
-    return -velocity / MaxAccel;
-}
-
-int CalcStopPosition(int velocity, int position, int stopTime)
-{
-    return (0.1445 * (stopTime * stopTime)) + (velocity * stopTime) + position;
-}
-
+/**
+ * Returns true if the Lander is above the landing pad
+ **/
 bool IsAbovePad(int posX, int padX)
 {
     return posX >= padX - PadRadius && posX <= padX + PadRadius;
 }
 
+/**
+ * Clamps value to between min and max
+ **/
 int Clamp(int value, int min, int max)
 {
     return std::max(min, std::min(value, max));
 }
 
+/**
+ *  Returns true if the absolute horizontal speed of the player is less than the safe landing maximum
+ * and if the absolute vertical speed of the player is less than the safe landing maximum, with a buffer
+ **/
 bool IsTravellingAtSafeSpeeds(int HS, int VS)
 {
     if (VS > MaxVerticalSpeed - SpeedBuffer || VS < -MaxVerticalSpeed + SpeedBuffer
@@ -117,11 +106,17 @@ bool IsTravellingAtSafeSpeeds(int HS, int VS)
     return true;
 }
 
+/**
+ * Converts radians to degrees
+ **/
 double RadiansToDegrees(double rad)
 {
     return (rad * 180) / M_PI;
 }
 
+/**
+ * Calculates the rotation required to stop the movement of the lander, assuming full burn
+ **/
 int RotateToStopLander(int speedX, int speedY)
 {
     double speed = sqrt(pow(speedX, 2) + pow(speedY, 2));
@@ -133,16 +128,25 @@ int RotateToStopLander(int speedX, int speedY)
     return (int) RadiansToDegrees(rotationRad);
 }
 
+/**
+ * Determins if the lander is moving too slow to reach the landing pad
+ **/
 bool IsLanderMovingTooSlow(int speedX)
 {
     return abs(speedX) < MaxHorizontalSpeed * 2;
 }
 
+/**
+ * Determins if the lander is moving too fast to reach the landing pad
+ **/
 bool IsLanderMovingTooFast(int speedX)
 {
     return abs(speedX) > MaxHorizontalSpeed * 4;
 }
 
+/**
+ * Calculates the rotation required to propel the lander towards the pad
+ **/
 int RotateToMoveLander(int posX, int padX)
 {
     if (posX < padX - PadRadius)
@@ -155,6 +159,9 @@ int RotateToMoveLander(int posX, int padX)
     }
 }
 
+/**
+ * True if the lander's Y position is lower than the Y position of the highest peak
+ **/
 bool IsLanderTooLow(int posY, int highestPeak)
 {
     return posY < highestPeak;
@@ -175,6 +182,9 @@ int GetTravelDirection(int posX, int padX)
     }
 }
 
+/**
+ * Returns true if the lander is just above the landing pad
+ **/
 bool IsAboutToLand(int posY, int padY)
 {
     return posY < padY + LandingDistance;
@@ -196,6 +206,9 @@ int DirectionToPad(int posX, int padX)
     }
 }
 
+/**
+ * Returns true if the lander has passed the highest peak in its way
+ **/
 bool IsPastHighestPeak(int padDirection, int posX, int peakX)
 {
     if (padDirection == -1) // Moving right
@@ -286,12 +299,13 @@ int main()
     
     Point landingSite = FindLandingSite(points);
     
+    // Sort the map points by height for height comparisons
     std::sort(points.begin(), points.end(), greater<Point>());
         
-    for (auto& i : points)
-    {
-        cerr << i.X << ", " << i.Y << endl;
-    }
+    //for (auto& i : points)
+    //{
+    //    cerr << i.X << ", " << i.Y << endl;
+    //}
     Point highestPeak = Point(0, 0);
 
     int time = -1;
@@ -316,16 +330,14 @@ int main()
 
         // Write an action using cout. DON'T FORGET THE "<< endl"
         // To debug: cerr << "Debug messages..." << endl;
-        int fullBurnTime = CalcFullBurnStopTime(VS);
-        int stopPosition = CalcStopPosition(VS, Y, fullBurnTime);
-        cerr << "Burn time = " << fullBurnTime << endl;
-        cerr << "Stop Position = " << stopPosition << endl;
-        cerr << "Highest Peak = " << highestPeak.X << ", " << highestPeak.Y << endl;
+        //cerr << "Burn time = " << fullBurnTime << endl;
+        //cerr << "Stop Position = " << stopPosition << endl;
+        //cerr << "Highest Peak = " << highestPeak.X << ", " << highestPeak.Y << endl;
 
         // R P. R is the desired rotation angle. P is the desired thrust power.
         if (IsAbovePad(X, landingSite.X))
         {
-            cerr << "Above pad" << endl;          
+            //cerr << "Above pad" << endl;          
             if (IsAboutToLand(Y, landingSite.Y))
             {
                 R = 0;
@@ -350,17 +362,17 @@ int main()
         }
         else
         {
-            cerr << "Not above pad" << endl;
+            //cerr << "Not above pad" << endl;
             
             if (IsPastHighestPeak(padDirection, X, highestPeak.X))
             {
-                cerr << "Past highest peak" << endl;
+                //cerr << "Past highest peak" << endl;
                 highestPeak = FindNextHighestPeak(padDirection, highestPeak, points);
             }
             
             if (IsLanderTooLow(Y, highestPeak.Y) && !IsPastHighestPeak(padDirection, X, highestPeak.X))
             {
-                cerr << "Lander is too low" << endl;
+                //cerr << "Lander is too low" << endl;
                 R = RotateToStopLander(HS, VS);
                 P = 4;
             }
