@@ -10,7 +10,7 @@ const int MaxHorizontalSpeed = 20;
 const int MaxVerticalSpeed = 40;
 const int MaxWidth = 7000;
 const int MaxHeight = 3000;
-const int SpeedBuffer = 5;
+const int SpeedBuffer = 10;
 const int PadRadius = 500;
 const int LandingDistance = 50;
 const int PeakHeightBuffer = 500;
@@ -280,6 +280,16 @@ Point FindNextHighestPeak(int padDirection, Point currentPeak, const std::vector
     return peak;
 }
 
+int CalcThrust(int speedY)
+{
+    if (speedY < 0)
+    {
+        return 4;
+    }
+    
+    return 0;
+}
+
 /**
  * Save the Planet.
  * Use less Fossil Fuel.
@@ -341,7 +351,7 @@ int main()
             if (IsAboutToLand(Y, landingSite.Y))
             {
                 R = 0;
-                P = 3;
+                P = CalcThrust(VS);
                 
                 if (!IsTravellingAtSafeSpeeds(HS, VS))
                 {
@@ -379,7 +389,7 @@ int main()
             else if (IsLanderMovingTooSlow(HS))
             {
                 R = RotateToMoveLander(X, landingSite.X);
-                P = 4;
+                P = 3;
             }
             else if (IsLanderMovingTooFast(HS))
             {
@@ -389,7 +399,7 @@ int main()
             else
             {
                 R = 0;
-                P = 4;
+                P = CalcThrust(VS);
             }
             
             if (Y >= 2900)
