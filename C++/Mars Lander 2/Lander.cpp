@@ -133,7 +133,7 @@ int RotateToStopLander(int speedX, int speedY)
  **/
 bool IsLanderMovingTooSlow(int speedX)
 {
-    return abs(speedX) < MaxHorizontalSpeed * 2;
+    return abs(speedX) < MaxHorizontalSpeed * 2.2;
 }
 
 /**
